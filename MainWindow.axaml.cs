@@ -61,4 +61,77 @@ public partial class MainWindow : Window
         ImageView.Source = _editableBitmap;
     }
 
+    private void OnRotateClick(object? sender, RoutedEventArgs e)
+    {
+        if (_editableBitmap is null)
+            return;
+
+        var angle = Rotate90.IsChecked == true ? 90 :
+                    Rotate180.IsChecked == true ? 180 :
+                    Rotate270.IsChecked == true ? 270 : 0;
+
+        _editableBitmap = RotateBitmap(_editableBitmap, angle);
+        ImageView.Source = _editableBitmap;
+    }
+
+    private static WriteableBitmap RotateBitmap(WriteableBitmap src, int angle)
+    {
+        var srcPixelSize = src.PixelSize;
+        var srcWidth = srcPixelSize.Width;
+        var srcHeight = srcPixelSize.Height;
+
+        var destWidth = (angle == 180) ? srcWidth : srcHeight;
+        var destHeight = (angle == 180) ? srcHeight : srcWidth;
+
+        var dst = new WriteableBitmap(
+            new PixelSize(destWidth, destHeight),
+            new Vector(96, 96),
+            PixelFormat.Bgra8888,
+            AlphaFormat.Premul);
+
+        using var srcBuf = src.Lock();
+        using var dstBuf = dst.Lock();
+
+        unsafe
+        {
+            var srcPtr = (uint*)srcBuf.Address;
+            var dstPtr = (uint*)dstBuf.Address;
+
+            for (var y = 0; y < srcHeight; y++)
+            {
+                for (var x = 0; x < srcWidth; x++)
+                {
+                    var srcIndex = y * srcBuf.RowBytes / 4 + x;
+                    var color = srcPtr[srcIndex];
+
+                    int dstX, dstY;
+
+                    switch (angle)
+                    {
+                        case 90:
+                            dstX = srcHeight - 1 - y;
+                            dstY = x;
+                            break;
+                        case 180:
+                            dstX = srcWidth - 1 - x;
+                            dstY = srcHeight - 1 - y;
+                            break;
+                        case 270:
+                            dstX = y;
+                            dstY = srcWidth - 1 - x;
+                            break;
+                        default:
+                            dstX = x;
+                            dstY = y;
+                            break;
+                    }
+
+                    var dstIndex = dstY * dstBuf.RowBytes / 4 + dstX;
+                    dstPtr[dstIndex] = color;
+                }
+            }
+        }
+
+        return dst;
+    }
 }

@@ -10,6 +10,10 @@
     <StackPanel Margin="15" Spacing="10" Orientation="Horizontal">
         <StackPanel Spacing="5">
             <Button Content="Otwórz obraz" Click="OnLoadImageClick" />
+            <RadioButton x:Name="Rotate90" Content="90°" GroupName="Rotate"/>
+            <RadioButton x:Name="Rotate180" Content="180°" GroupName="Rotate"/>
+            <RadioButton x:Name="Rotate270" Content="270°" GroupName="Rotate"/>
+            <Button Content="Obróć" Click="OnRotateClick"/>
         </StackPanel>
         <Image Name="ImageView" />
     </StackPanel>
