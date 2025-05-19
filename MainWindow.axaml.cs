@@ -103,17 +103,6 @@ public partial class MainWindow : Window
 
         ImageView.Source = _editableBitmap;
     }
-
-
-    private async Task RunWithSpinner(Func<Task> action)
-    {
-        LoadingOverlay.IsVisible = true;
-        await Task.Delay(50);
-
-        await Task.Run(action);
-
-        LoadingOverlay.IsVisible = false;
-    }
     
     private void OnRotateClick(object? sender, RoutedEventArgs e)
     {
