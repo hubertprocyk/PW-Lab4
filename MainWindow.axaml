@@ -1,0 +1,16 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="PW_Lab4.MainWindow"
+        Title="PW Lab4"
+        Width="640"
+        Height="360">
+    <StackPanel Margin="15" Spacing="10" Orientation="Horizontal">
+        <StackPanel Spacing="5">
+            <Button Content="Otwórz obraz" Click="OnLoadImageClick" />
+        </StackPanel>
+        <Image Name="ImageView" />
+    </StackPanel>
+</Window>
