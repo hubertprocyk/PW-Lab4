@@ -60,5 +60,49 @@ public partial class MainWindow : Window
 
         ImageView.Source = _editableBitmap;
     }
+    
+    private async Task RunWithSpinner(Func<Task> action)
+    {
+        LoadingOverlay.IsVisible = true;
+        await Task.Delay(50); // Daj czas na przerysowanie UI
+
+        await Task.Run(action);
+
+        LoadingOverlay.IsVisible = false;
+    }
+    
+    private async void OnOnlyGreenClick(object? sender, RoutedEventArgs e)
+    {
+        if (_editableBitmap is null) return;
+
+        await RunWithSpinner(() =>
+        {
+            using var fb = _editableBitmap.Lock();
+
+            unsafe
+            {
+                var ptr = (uint*)fb.Address;
+                int pixelCount = fb.Size.Width * fb.Size.Height;
+
+                for (int i = 0; i < pixelCount; i++)
+                {
+                    uint pixel = ptr[i];
+
+                    byte a = (byte)(pixel >> 24);
+                    byte g = (byte)(pixel >> 8);
+
+                    byte r = 0;
+                    byte b = 0;
+
+                    ptr[i] = ((uint)a << 24) | ((uint)r << 16) | ((uint)g << 8) | b;
+                }
+            }
+
+            return Task.CompletedTask;
+        });
+
+        ImageView.Source = _editableBitmap;
+    }
+
 
 }
