@@ -61,6 +61,16 @@ public partial class MainWindow : Window
         ImageView.Source = _editableBitmap;
     }
 
+    private async Task RunWithSpinner(Func<Task> action)
+    {
+        LoadingOverlay.IsVisible = true;
+        await Task.Delay(50);
+
+        await Task.Run(action);
+
+        LoadingOverlay.IsVisible = false;
+    }
+    
     private void OnRotateClick(object? sender, RoutedEventArgs e)
     {
         if (_editableBitmap is null)
@@ -134,4 +144,75 @@ public partial class MainWindow : Window
 
         return dst;
     }
+    
+    private async void OnInvertColorsClick(object? sender, RoutedEventArgs e)
+    {
+        if (_editableBitmap is null) return;
+
+        await RunWithSpinner(() =>
+        {
+            using var fb = _editableBitmap.Lock();
+            unsafe
+            {
+                var ptr = (uint*)fb.Address;
+                int pixelCount = fb.Size.Width * fb.Size.Height;
+
+                for (int i = 0; i < pixelCount; i++)
+                {
+                    uint pixel = ptr[i];
+
+                    byte a = (byte)(pixel >> 24);
+                    byte r = (byte)(pixel >> 16);
+                    byte g = (byte)(pixel >> 8);
+                    byte b = (byte)(pixel);
+
+                    r = (byte)(255 - r);
+                    g = (byte)(255 - g);
+                    b = (byte)(255 - b);
+
+                    ptr[i] = ((uint)a << 24) | ((uint)r << 16) | ((uint)g << 8) | b;
+                }
+            }
+
+            return Task.CompletedTask;
+        });
+
+        ImageView.Source = _editableBitmap;
+    }
+
+    
+    private async void OnFlipHorizontalClick(object? sender, RoutedEventArgs e)
+    {
+        if (_editableBitmap is null) return;
+
+        await RunWithSpinner(() =>
+        {
+            using var fb = _editableBitmap.Lock();
+            int width = fb.Size.Width;
+            int height = fb.Size.Height;
+
+            unsafe
+            {
+                var ptr = (uint*)fb.Address;
+                int rowStride = fb.RowBytes / 4;
+
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width / 2; x++)
+                    {
+                        int leftIndex = y * rowStride + x;
+                        int rightIndex = y * rowStride + (width - 1 - x);
+
+                        (ptr[leftIndex], ptr[rightIndex]) = (ptr[rightIndex], ptr[leftIndex]);
+                    }
+                }
+            }
+
+            return Task.CompletedTask;
+        });
+
+        ImageView.Source = _editableBitmap;
+    }
+
+   
 }

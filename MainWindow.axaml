@@ -14,7 +14,19 @@
             <RadioButton x:Name="Rotate180" Content="180°" GroupName="Rotate"/>
             <RadioButton x:Name="Rotate270" Content="270°" GroupName="Rotate"/>
             <Button Content="Obróć" Click="OnRotateClick"/>
+            <Button Content="Odwróć kolory" Click="OnInvertColorsClick"/>
+            <Button Content="Odbij poziomo" Click="OnFlipHorizontalClick"/>
         </StackPanel>
-        <Image Name="ImageView" />
+        <ScrollViewer>
+            <Grid>
+                <Image x:Name="ImageView" Stretch="None"/>
+                <Border x:Name="LoadingOverlay" Background="#80000000" IsVisible="False">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <ProgressBar IsIndeterminate="True" Width="200"/>
+                        <TextBlock Text="Przetwarzanie..." Foreground="White" Margin="10" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
     </StackPanel>
 </Window>
