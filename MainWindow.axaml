@@ -16,6 +16,7 @@
             <Button Content="Obróć" Click="OnRotateClick"/>
             <Button Content="Odwróć kolory" Click="OnInvertColorsClick"/>
             <Button Content="Odbij poziomo" Click="OnFlipHorizontalClick"/>
+            <Button Content="Tylko zielony" Click="OnOnlyGreenClick"/>
         </StackPanel>
         <ScrollViewer>
             <Grid>
